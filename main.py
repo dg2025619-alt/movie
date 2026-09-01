@@ -81,7 +81,44 @@ st.caption("이 그래프로 알 수 있는 것: ")
 
 
 # ==============================================================
-# 구역 3. (다음 그래프를 위한 자리)
+# 구역 3. 날짜별 박스오피스 10위권 일관객 합계
 # ==============================================================
-st.header("3. (다음 그래프 추가 예정)")
+st.header("3. 날짜별 박스오피스 10위권 일관객 합계")
+
+daily_total = df.groupby("날짜", as_index=False)["일관객"].sum()
+
+fig3 = px.area(
+    daily_total,
+    x="날짜",
+    y="일관객",
+    title="날짜별 10위권 일관객 합계",
+    labels={"날짜": "날짜", "일관객": "일관객 합계"},
+)
+fig3.update_traces(
+    hovertemplate="날짜: %{x|%Y-%m-%d}<br>일관객 합계: %{y:,}명<extra></extra>"
+)
+
+# 합계가 가장 컸던 상위 3일 표시
+top3_days = daily_total.sort_values("일관객", ascending=False).head(3)
+
+fig3.add_scatter(
+    x=top3_days["날짜"],
+    y=top3_days["일관객"],
+    mode="markers+text",
+    text=top3_days["날짜"].dt.strftime("%Y-%m-%d"),
+    textposition="top center",
+    marker=dict(size=10, color="red"),
+    name="합계 상위 3일",
+    hovertemplate="날짜: %{x|%Y-%m-%d}<br>일관객 합계: %{y:,}명<extra></extra>",
+)
+
+st.plotly_chart(fig3, use_container_width=True)
+
+st.caption("이 그래프로 알 수 있는 것: ")
+
+
+# ==============================================================
+# 구역 4. (다음 그래프를 위한 자리)
+# ==============================================================
+st.header("4. (다음 그래프 추가 예정)")
 st.info("여기에 다음 그래프를 이어서 추가할 수 있습니다.")
