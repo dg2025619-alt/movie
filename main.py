@@ -189,22 +189,27 @@ st.caption("이 그래프로 알 수 있는 것: ")
 
 
 # ==============================================================
-# 구역 6. 박스오피스 순위별 상영횟수 분포
+# 구역 6. 영화별 최고 일관객수 비교
 # ==============================================================
-st.header("6. 박스오피스 순위별 상영횟수")
+st.header("6. 영화별 최고 일관객수 비교 (TOP 10)")
 
-fig6 = px.box(
-    df,
-    x="순위",
-    y="상영횟수",
-    points=False,
-    title="박스오피스 순위별 상영횟수 분포",
-    labels={"순위": "박스오피스 순위", "상영횟수": "상영횟수"},
+max_audience = df.groupby("영화명", as_index=False)["일관객"].max().rename(
+    columns={"일관객": "최고일관객"}
 )
-fig6.update_xaxes(dtick=1, title="박스오피스 순위 (1~10위)")
-fig6.update_yaxes(title="상영횟수")
+top10_max = max_audience.sort_values("최고일관객", ascending=False).head(10)
+# 관객이 많은 영화가 그래프 위쪽에 오도록, 그리는 순서는 오름차순으로 정렬
+top10_max = top10_max.sort_values("최고일관객", ascending=True)
+
+fig6 = px.bar(
+    top10_max,
+    x="최고일관객",
+    y="영화명",
+    orientation="h",
+    title="영화별 최고 일관객수 TOP 10",
+    labels={"최고일관객": "최고 일관객수", "영화명": "영화명"},
+)
 fig6.update_traces(
-    hovertemplate="순위: %{x}위<br>상영횟수: %{y:,}회<extra></extra>"
+    hovertemplate="영화명: %{y}<br>최고 일관객수: %{x:,}명<extra></extra>"
 )
 
 st.plotly_chart(fig6, use_container_width=True)
