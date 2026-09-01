@@ -151,7 +151,45 @@ st.caption("이 그래프로 알 수 있는 것: ")
 
 
 # ==============================================================
-# 구역 5. (다음 그래프를 위한 자리)
+# 구역 5. 월 x 요일별 일관객 합계 히트맵
 # ==============================================================
-st.header("5. (다음 그래프 추가 예정)")
+st.header("5. 월 x 요일별 일관객 합계")
+
+weekday_labels = ["월", "화", "수", "목", "금", "토", "일"]
+
+df_heat = df.copy()
+df_heat["월"] = df_heat["날짜"].dt.month
+df_heat["요일"] = df_heat["날짜"].dt.dayofweek.map(dict(enumerate(weekday_labels)))
+
+heat_table = (
+    df_heat.groupby(["요일", "월"])["일관객"]
+    .sum()
+    .reset_index()
+    .pivot(index="요일", columns="월", values="일관객")
+    .reindex(weekday_labels)  # 월요일부터 일요일 순서로 정렬
+)
+heat_table = heat_table.reindex(columns=sorted(heat_table.columns))
+
+fig5 = px.imshow(
+    heat_table,
+    color_continuous_scale="Reds",  # 색이 진할수록 관객이 많음
+    labels=dict(x="월", y="요일", color="일관객 합계"),
+    aspect="auto",
+    title="월 x 요일별 일관객 합계",
+)
+fig5.update_xaxes(dtick=1, title="월")
+fig5.update_yaxes(title="요일")
+fig5.update_traces(
+    hovertemplate="요일: %{y}<br>월: %{x}월<br>일관객 합계: %{z:,}명<extra></extra>"
+)
+
+st.plotly_chart(fig5, use_container_width=True)
+
+st.caption("이 그래프로 알 수 있는 것: ")
+
+
+# ==============================================================
+# 구역 6. (다음 그래프를 위한 자리)
+# ==============================================================
+st.header("6. (다음 그래프 추가 예정)")
 st.info("여기에 다음 그래프를 이어서 추가할 수 있습니다.")
