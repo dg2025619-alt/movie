@@ -118,7 +118,40 @@ st.caption("이 그래프로 알 수 있는 것: ")
 
 
 # ==============================================================
-# 구역 4. (다음 그래프를 위한 자리)
+# 구역 4. 총 관객수 TOP 10 영화
 # ==============================================================
-st.header("4. (다음 그래프 추가 예정)")
+st.header("4. 총 관객수 TOP 10 영화")
+
+movie_summary = (
+    df.groupby("영화명")
+    .agg(총관객=("일관객", "sum"), 순위권일수=("날짜", "count"))
+    .reset_index()
+)
+
+top10_movies = movie_summary.sort_values("총관객", ascending=False).head(10)
+# 관객이 많은 영화가 그래프 위쪽에 오도록, 그리는 순서는 오름차순으로 정렬
+top10_movies = top10_movies.sort_values("총관객", ascending=True)
+
+fig4 = px.bar(
+    top10_movies,
+    x="총관객",
+    y="영화명",
+    orientation="h",
+    title="총 관객수 TOP 10 영화",
+    labels={"총관객": "총 관객수", "영화명": "영화명"},
+    custom_data=["순위권일수"],
+)
+fig4.update_traces(
+    hovertemplate="영화명: %{y}<br>총 관객수: %{x:,}명<br>10위권에 든 날수: %{customdata[0]}일<extra></extra>"
+)
+
+st.plotly_chart(fig4, use_container_width=True)
+
+st.caption("이 그래프로 알 수 있는 것: ")
+
+
+# ==============================================================
+# 구역 5. (다음 그래프를 위한 자리)
+# ==============================================================
+st.header("5. (다음 그래프 추가 예정)")
 st.info("여기에 다음 그래프를 이어서 추가할 수 있습니다.")
